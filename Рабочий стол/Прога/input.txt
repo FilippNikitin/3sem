@@ -1,5 +1,4 @@
 4
 1 ls -al
 3 git add ex5.c
-5 man ls
 6 halt -f
