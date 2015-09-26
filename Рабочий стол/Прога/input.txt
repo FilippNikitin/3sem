@@ -1,4 +1,4 @@
-4
+3
 1 ls -al
-3 git add ex5.c
-6 halt -f
+2 echo "Helo"
+4 touch output.txt
