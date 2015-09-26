@@ -125,7 +125,7 @@ void get_task(FILE * file, task ** tasks, int num)
 {
 	int i, k;
 
-	char* delimiters="\t\n ";//разделители//
+	char* delimiters=" \n ";//разделители//
 
 	char ** pointers_arg = (char **)malloc((max_arg_num + 1) * sizeof(char *)+1);//двумерный массив аргументов 
 
