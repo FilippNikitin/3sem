@@ -24,70 +24,46 @@
 
 int main()
 {
-  /*
-   * Нужно писать так:
-   * int n, i;
-   * обратите внимание на расстановку пробелов
-   */
-  int n , i;
-  int status = 0;
-  pid_t firstid = getpid(), id, pid;
-  printf("I burn (c)%d\n", firstid);
-  printf("How many processes ");
-  scanf("%d",&n);
-  sleep(1);
-  
-  /*
-   * Скобку открыли, скобку закрыли. Всё, что внутри сдвинуть на 1 символ табуляции.
-   * 
-  if (n == 1)
-  {
-    printf("Process die(c)%d\n", getpid());                                     
-    exit(0); 
-  }
-    Нужно поправить и далее в коде.
-   */
-  
-  if (n == 1)
-     {
-      printf("Process die(c)%d\n", getpid());                                     
-      exit(0); 
-     }
-  for (i = 0; i < n - 1 ; i++)
-     {
-      /*
-       * Побитовое или? Уверены?
-       * + вокруг всех бинарных операторов ставьте пробелы: вокруг "или", в частности 
-       */
-      if ((pid == 0)|(i == 0))//мы в дочернем процессе? 
-         {     
-          if (getpid() != firstid)
-             {
-              /*
-               * После запятой ставьте пробел. До запятой не нужно.
-               */
-              printf("Process №%d id%d created\n",i + 1, getpid());
-              printf("My parent id%d\n", getppid());
-              sleep(1);
-             }
-        
-          pid = fork();//форкаемся	
-         }
-      else //мы в род. процессе
-         { 
-          id = wait(&status);//ждём завершения дочернего процесса
-          if (getpid() == firstid)
-             {                       
-              printf("Process №%d id%d completed\n", i + 1, id);//сообщаем о завершение дочернего процесса	
-              sleep(1);
-              printf("Process die(c)%d\n", getpid());
-              exit(0);
-             }
-          printf("Process №%d id%d completed\n", i + 2, id);//сообщаем о завершение дочернего процесса
-	  sleep(1);
-          exit(0);//завершаемся
-         }
-      }
+    int n, i;
+    int status = 0;
+    pid_t firstid = getpid(), id, pid;
+    printf("I burn (c)%d\n", firstid);
+    printf("How many processes ");
+    scanf("%d",&n);
+    sleep(1);  
+    if (n == 1)
+    {
+        printf("Process die(c)%d\n", getpid());                                     
+        exit(0); 
+    }
+    for (i = 0; i < n; i++)
+    {
+        if ((pid == 0)||(i == 0))
+        {     
+            if (getpid() != firstid)
+            {
+                printf("Process №%d id%d created\n", i + 1, getpid());
+                printf("My parent id%d\n", getppid());
+                sleep(1);
+            }
+            if (i != n)
+            {
+                pid = fork();
+            }	
+        }
+        else 
+        { 
+            id = wait(&status);
+            printf("Process №%d id%d completed\n", i + 1, id);
+	    sleep(1);
+            if (getpid() == firstid)
+            {                       
+                printf("Process die(c)%d\n", getpid());
+                exit(0);
+            }
+            exit(0);
+        }
+    }   
       
   /*
    * FIXIT:
@@ -109,19 +85,5 @@ int main()
    * Никак не получается это внутрь запихнуть?
    * Много ребят написали и у них получилось wait делать только в одном месте, а не в 2х, как у вас пока.
    * Программа работает, но подумайте, как ей можно более лаконичной сделать.
-   */
-  if (pid == 0)//если мы в дочернем (последнем)
-     { 
-      printf("Process №%d id%d created\n", n, getpid());
-      printf("My parent id%d\n", getppid());
-      sleep(1);
-      exit(0);
-     }
-  if (pid != 0)//если мы в предпоследнем
-     {
-      id = wait(&status);//ждём завершения последнего
-      printf("Process №%d id%d completed\n", n, id);
-      sleep(1);
-      exit(0);
-     }
+   */  
 }
