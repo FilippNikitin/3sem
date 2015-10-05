@@ -6,51 +6,51 @@
 #include <string.h>
 
 /*
- * FIXIT: 
- * Не ставьте пустые строки между каждой парой. 
+ * Чтобы отличать константы от переменных пишите их с большой буквы, либо caps`ом MAX_NUM_TASKS
  */
-const int maxNumTasks = 100;
-const int maxLenTasks = 100;
-const int maxLenArg = 10;
-const int maxNumArg = 100;
+const int MaxNumTasks = 100;
+const int MaxLenTasks = 100;
+const int MaxLenArg = 10;
+const int MaxNumArg = 100;
 
 /*
- * FIXIT:
- * Я полностью с вами согласен. Думаю согласятся многие. Не нужно это комментировать.
- * 
- * Вы называете ф-ю complete_tasks - завершить задачи. видимо нужен другой глагол.
- * И не нужно переводить название в комментарии. Понятного названия на английском вполне достаточно.
+ * Называйте лучше с заглавной буквы, чтобы отличать от названий переменных
  */
-
-
-typedef struct task
+typedef struct Task
 {
-    char * cmd;
-    char ** argCmd;
+    char *cmd;
+    char **argCmd;
     int numArg;
     int sleepTime;
-}task;
+} Task;
 
-
+/*
+ * Звездочку лепите либо к названию типа, либо к названию переменной. Причём везде одинаково. Отделять с обоих сторон пробелами не надо. 
+ */
 void Split(char *string, char *delimiters, char ***tokens, int *countTokens);
-void GetTask(FILE * fin, task ** tasks, int num); 
-void CompleteTasks(task** tasks, int num);
-
+void GetTask(FILE *fin, Task **tasks, int num); 
+void CompleteTasks(Task **tasks, int num);
 
 int main()
 {
     int i;
-    int numCmd;        
-    task *tasks =(task *) malloc(maxNumTasks * sizeof(task) + 1);
+    int numCmd;
+    /*
+     * Зачем +1?
+     */
+    Task *tasks =(Task *) malloc(MaxNumTasks * sizeof(Task) + 1);
     FILE *fin = fopen("input.txt", "r");
-    char *c = (char *)malloc(maxLenTasks * sizeof(char) + 1);
+    char *c = (char *)malloc(MaxLenTasks * sizeof(char) + 1);
 
-    fgets(c, maxLenTasks, fin);
+    fgets(c, MaxLenTasks, fin);
     numCmd = atoi(c);
 
-    GetTask(fin, &(tasks), numCmd);
+    GetTask(fin, &tasks, numCmd);
     CompleteTasks(&tasks, numCmd);
 
+    /*
+     * Мне кажется число вызовов free меньше числа выделений памяти. Возможно ошибаюсь.
+     */
     for (i = 0; i < numCmd; i++)
     {
         free(tasks[i].argCmd);
@@ -63,7 +63,6 @@ int main()
     return 0;
 }
 
-
 void Split(char *string, char *delimiters, char ***tokens, int *counterTokens)
 {
     char *token;
@@ -73,13 +72,12 @@ void Split(char *string, char *delimiters, char ***tokens, int *counterTokens)
 
     for (token = strtok(string, delimiters); 
          token != NULL;
-	 token = strtok(NULL, delimiters)) 
+         token = strtok(NULL, delimiters)) 
     {
-
         if (counter == sizeToken) 
         {
             sizeToken = nextSize;                        
-            temporary = (char **)realloc(temporary, sizeToken * sizeof(char *)+1);
+            temporary = (char **)realloc(temporary, sizeToken * sizeof(char *) + 1);
             nextSize *= 2;
         }
         temporary[counter++] = token;
@@ -89,19 +87,22 @@ void Split(char *string, char *delimiters, char ***tokens, int *counterTokens)
 }
 
 
-void GetTask(FILE * file, task **tasks, int num)
+void GetTask(FILE *file, Task **tasks, int num)
 {
     int i, k;
     char *delimiters=" \n";
-    char **pointersArg = (char **)malloc((maxNumArg + 1) * sizeof(char *) + 1);
+    /*
+     * +1?
+     */
+    char **pointersArg = (char **)malloc((MaxNumArg + 1) * sizeof(char *) + 1);
 
     for (i = 0; i < num; i++) 
     {
-        char* temporary = (char *)malloc(maxLenTasks * sizeof(char));
-        (*tasks)[i].argCmd = (char **)malloc(maxNumArg * sizeof(char));
+        char* temporary = (char *)malloc(MaxLenTasks * sizeof(char));
+        (*tasks)[i].argCmd = (char **)malloc(MaxNumArg * sizeof(char));
 
-        fgets(temporary, maxLenTasks, file);
-        Split(temporary, delimiters, &(pointersArg), &((*tasks)[i].numArg));
+        fgets(temporary, MaxLenTasks, file);
+        Split(temporary, delimiters, &pointersArg, &((*tasks)[i].numArg));
 
         (*tasks)[i].sleepTime = atoi(pointersArg[0]);
         (*tasks)[i].cmd = pointersArg[1];
@@ -116,8 +117,11 @@ void GetTask(FILE * file, task **tasks, int num)
     free(pointersArg);
 }
 
-
-void CompleteTasks(task **tasks, int num)
+/*
+ * Почему не Execute?
+ * Complete tasks - завершить задачи. Вы же их запускаете, а не завершаете.
+ */
+void CompleteTasks(Task **tasks, int num)
 {
     pid_t pid=0;
     int i, id;
@@ -125,7 +129,7 @@ void CompleteTasks(task **tasks, int num)
     {
         pid = fork();
         if (pid == 0) 
-        {	
+        {
             sleep((*tasks)[i].sleepTime);
             execvp((*tasks)[i].cmd, (*tasks)[i].argCmd);
             printf("Error\n");
@@ -137,3 +141,7 @@ void CompleteTasks(task **tasks, int num)
         pid = wait(&id);
     }
 }
+
+/*
+ * В целом нормально. Засчитано.
+ */
