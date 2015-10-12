@@ -6,7 +6,7 @@
 
 #define mytype int
 #define N 1000
-#define N1 4
+#define N1 1
 /*
     Я попытался распараллелить умножение матриц.
     Однако эффекта ускорения не получил.
@@ -116,7 +116,7 @@ void* my_thread(void* dummy)
         i++;
     }
     pthread_t my_thread_id;
-    for (m = j*factor; m < (i + 1)*factor; m++)
+    for (m = j*factor; m < (j + 1)*factor; m++)
     {
     if (m < N)
     {
