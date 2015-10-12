@@ -17,14 +17,13 @@ mytype **matrix2;
 mytype **resultMyliply;
 
 int i = 0;
-int factor = N/N1;
+int factor = N / N1;
 
 void CreateMatrix(mytype **m, int n);
 mytype** GetMemoryMatrix(mytype **a, int n);
 void** FreeMemoryMatrix(mytype **a, int n);
 void* my_thread(void* dummy);
 void PrintMatrix(mytype **m, int n);
-
 
 int main()
 {
@@ -45,14 +44,12 @@ int main()
     {
         result = pthread_create(&thread_id[j] , (pthread_attr_t *)NULL , my_thread , NULL);
     }
-
-
     for (j = 0; j < N1; j++)
     {
         pthread_join(thread_id[j] , (void **) NULL);
     }
     time = (clock() - time)/CLOCKS_PER_SEC;
-    printf("%d", time);
+    printf("%f\n", time);
     FreeMemoryMatrix(matrix1, n);
     FreeMemoryMatrix(matrix2, n);
     FreeMemoryMatrix(resultMyliply, n);
@@ -99,6 +96,7 @@ void PrintMatrix(mytype **m, int n)
     int i, j;
     for(i = 0; i < n; i++)
     {
+        /* for(j=0;j<n;j++) ... А нужно for(j = 0; j < n; j++) */
         for(j=0;j<n;j++)
         {
             printf("%d ",m[i][j]);
@@ -109,28 +107,36 @@ void PrintMatrix(mytype **m, int n)
 
 void* my_thread(void* dummy)
  {
+   /*
+    * Не совсем понял, как это работает. Давайте вы на семинаре поясните.
+    * Забываете ставить пробелы вокруг бинарных операторов.
+    */
     int j, k, l, m;
     if (i < N1)
     {
         j = i;
+        // Так делать нельзя, т.к. операция i++ не атомарная и неисключены условия гонки. Нужно либо описание задачи для каждой нити передавать как входной параметр ф-и (у вас называется dummy), либо использовать семафор.
+        // Это надо поправить.
+        // Называйте переменные более осмысленно. Глобальная переменная i может значить всё что угодно ... Нужно более конкретное название.
         i++;
     }
     pthread_t my_thread_id;
-    for (m = j*factor; m < (j + 1)*factor; m++)
+    for (m = j * factor; m < (j + 1) * factor; m++)
     {
-    if (m < N)
-    {
-    for (k = 0; k < N; k++)
-    {
-        for(l = 0; l < N; l++)
+      if (m < N)
+      {
+        for (k = 0; k < N; k++)
         {
-            resultMyliply[m][k] += matrix1[m][l]*matrix2[l][k];
+            for(l = 0; l < N; l++)
+            {
+                resultMyliply[m][k] += matrix1[m][l] * matrix2[l][k];
+            }
         }
-    }
-    }
+      }
     }
     return NULL;
 }
+// На виртуальной машине ускорение получить вряд ли получится. Нужно проверять так, где линукс стоит основной ОС.
 
 
 
