@@ -7,16 +7,16 @@
 
 #define N 10000000
 
-long int a[3] = {0, 0, 0};
+int a[3] = {0, 0, 0};
 const char pathname[] = "seminar5_race.c";
 
 void* my_thread(void* dummy)
 {
 
     struct sembuf mybuf;
-	int i;
-	int semid;
-	key_t key;
+    int i;
+    int semid;
+    key_t key;
     if ((key = ftok(pathname, 0)) < 0)
     {
         printf("Can`t generate key\n");
@@ -31,10 +31,10 @@ void* my_thread(void* dummy)
     my_thread_id = pthread_self();
     for (i = 0; i < N; i++)
     {
-			a[1]++;
-			a[0]++;
+        a[1]++;
+        a[0]++;
 	}
-	printf("id%d a[0]%d, a[1]%d\n", my_thread_id, a[0], a[1]);
+    printf("id%d a[0]%d, a[1]%d\n", my_thread_id, a[0], a[1]);
     mybuf.sem_op =  1;
     mybuf.sem_flg = 0;
     mybuf.sem_num = 0;
@@ -83,14 +83,15 @@ int main()
     int i;
     for (i = 0; i < N; i++)
     {
-			a[1]++;
-			a[2]++;
+        a[1]++;
+        a[2]++;
 	}
-	printf("id%d a[1]%d, a[2]%d\n" , my_thread_id, a[1], a[2]);
+    printf("id%d a[1]%d, a[2]%d\n" , my_thread_id, a[1], a[2]);
     pthread_join(thread_id , (void **) NULL);
     semctl(semid, IPC_RMID, NULL);
     return 0;
 }
+
 
 
 
