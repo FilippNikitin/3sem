@@ -10,7 +10,7 @@
 int a[3] = {0, 0, 0};
 const char pathname[] = "seminar5_race.c";
 
-void* my_thread(void* dummy)
+/*void* my_thread(void* dummy)
 {
 
     struct sembuf mybuf;
@@ -33,7 +33,7 @@ void* my_thread(void* dummy)
     {
         a[1]++;
         a[0]++;
-	}
+    }
     printf("id%d a[0]%d, a[1]%d\n", my_thread_id, a[0], a[1]);
     mybuf.sem_op =  1;
     mybuf.sem_flg = 0;
@@ -44,11 +44,10 @@ void* my_thread(void* dummy)
         exit(-1);
     }
     return NULL;
-}
+}*/
 
 
 int main()
-
 {
     key_t key;
     struct sembuf mybuf;
@@ -63,7 +62,7 @@ int main()
         printf("Can`t get semid\n");
         exit(-1);
     }
-    pthread_t thread_id, my_thread_id;
+   /* pthread_t thread_id, my_thread_id;
     int result;
     result = pthread_create(&thread_id, (pthread_attr_t *)NULL, my_thread, NULL);
     if (result)
@@ -85,10 +84,10 @@ int main()
     {
         a[1]++;
         a[2]++;
-	}
+    }
     printf("id%d a[1]%d, a[2]%d\n" , my_thread_id, a[1], a[2]);
     pthread_join(thread_id , (void **) NULL);
-    semctl(semid, IPC_RMID, NULL);
+    semctl(semid, IPC_RMID, NULL);*/
     return 0;
 }
 
