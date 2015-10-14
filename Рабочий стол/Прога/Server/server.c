@@ -11,7 +11,7 @@
 
 /*
     Здесь много повторяющегося кода, если надо, разобью на функции
-
+    V: Да, избавьтесь от дублирования кода и засчитаем.
 */
 struct inquiry
 {
@@ -52,7 +52,7 @@ int main()
         exit(-1);
     }
 
-    if ((semid = semget(key, 1, 0666| IPC_CREAT)) < 0)
+    if ((semid = semget(key, 1, 0666 | IPC_CREAT)) < 0)
     {
         printf("Can`t get semid\n");
         exit(-1);
@@ -88,6 +88,10 @@ int main()
 
 void* my_thread(void* arg)
 {
+    /*
+     * client 
+     * Если вы осознанно написали klient, то ваше дело.
+     */
     char pathname[] = "klient.c";
     key_t key;
 
@@ -111,6 +115,8 @@ void* my_thread(void* arg)
         exit(-1);
     }
 
+    /* Сделайте глобальную переменную, либо передавайте semid в эту ф-ю в качестве параметра: так даже лучше будет. Не надо копист практиковать. */
+    
     mybuf.sem_op = -1;
     mybuf.sem_flg = 0;
     mybuf.sem_num = 0;
@@ -121,7 +127,9 @@ void* my_thread(void* arg)
         exit(-1);
     }
 
-
+    /*
+     * Та же проблема, что и с semid.
+     */
     if((msqid = msgget(key, 0666 | IPC_CREAT)) < 0)
     {
         printf("Can\'t get msqid\n");
@@ -134,8 +142,8 @@ void* my_thread(void* arg)
     if (msgsnd(msqid, (struct msgbufout *) &mybufout, sizeof(long long int), 0) < 0)
     {
         printf("Can\'t send message to queue\n");
-	msgctl(msqid, IPC_RMID, (struct msqid_ds*)NULL);
-	exit(-1);
+        msgctl(msqid, IPC_RMID, (struct msqid_ds*)NULL);
+        exit(-1);
     }
 
     mybuf.sem_op = 1;
@@ -147,5 +155,4 @@ void* my_thread(void* arg)
         printf("Can`t wait for condition\n");
         exit(-1);
     }
-
 }
