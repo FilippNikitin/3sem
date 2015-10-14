@@ -74,8 +74,8 @@ int main()
         exit(-1);
     }
 
-	while (1)
-	{
+    while (1)
+    {
         if ((msgrcv(msqid, (struct msgbufin *)&mybufin, sizeof(struct inquiry), 0, 0)) < 0)
         {
             printf("Can\'t receive message from queue\n");
@@ -94,7 +94,7 @@ void* my_thread(void* arg)
     int msqid;
     struct mymsgbufin mybufin;
     struct mymsgbufout mybufout;
-    mybufin = *((struct mymsgbufin*)arg);
+    mybufin = *((struct mymsgbufin *)arg);
 
     int semid;
     struct sembuf mybuf;
@@ -128,14 +128,14 @@ void* my_thread(void* arg)
         exit(-1);
     }
 
-	mybufout.result = mybufin.data.a * mybufin.data.b;
-	mybufout.mtype = mybufin.mtype;
+    mybufout.result = mybufin.data.a * mybufin.data.b;
+    mybufout.mtype = mybufin.mtype;
 
-	if (msgsnd(msqid, (struct msgbufout *) &mybufout, sizeof(long long int), 0) < 0)
-	{
+    if (msgsnd(msqid, (struct msgbufout *) &mybufout, sizeof(long long int), 0) < 0)
+    {
         printf("Can\'t send message to queue\n");
-		msgctl(msqid, IPC_RMID, (struct msqid_ds*)NULL);
-		exit(-1);
+	msgctl(msqid, IPC_RMID, (struct msqid_ds*)NULL);
+	exit(-1);
     }
 
     mybuf.sem_op = 1;
