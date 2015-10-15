@@ -69,7 +69,7 @@ void* ProcessInquiry(void* arg)
     mybufout.result = mybufin.data.a * mybufin.data.b;
     mybufout.mtype = mybufin.mtype;
 
-    if (msgsnd(msqid, (struct msgbufout *) &mybufout, sizeof(long long int), 0) < 0)
+    if (msgsnd(msqid, (struct msgbufout *) &mybufout, sizeof(long int), 0) < 0)
     {
         printf("Can\'t send message to queue\n");
         msgctl(msqid, IPC_RMID, (struct msqid_ds*)NULL);
