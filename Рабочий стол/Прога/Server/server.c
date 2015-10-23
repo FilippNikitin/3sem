@@ -7,7 +7,7 @@
 #include <pthread.h>
 #include <sys/sem.h>
 #include <unistd.h>
-#define N 1
+#define N 4
 #define FileName "klient.c"
 
 /*
