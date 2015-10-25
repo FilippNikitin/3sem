@@ -24,7 +24,7 @@ int main()
         exit(-1);
     }
 
-    if ((semid = semget(key, 1, 0666 | IPC_CREAT)) < 0)
+    if ((semid = semget(key, 2, 0666 | IPC_CREAT)) < 0)
     {
         printf("Can`t get semid\n");
         exit(-1);

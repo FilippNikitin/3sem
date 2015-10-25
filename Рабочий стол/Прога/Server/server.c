@@ -15,6 +15,7 @@ struct inquiry
     int a;
     int b;
 };
+
 struct mymsgbufin
 {
     long mtype;
@@ -27,22 +28,22 @@ struct mymsgbufout
     long int result;
 };
 
-int semid;
+int semid, semidNew;
 int msqid;
 
 void* ProcessInquiry(void* arg);
 key_t GenerateKey();
-int CreateSemaphore();
-void ChangeSemaphore(int semid, int n);
+int CreateSemaphore(int n);
+void ChangeSemaphore(int semid, int i, int n);
 int CreateQueue();
 
 int main()
 {
     struct mymsgbufin mybufin;
     pthread_t thread_id;
-    semid = CreateSemaphore();
+    semid = CreateSemaphore(2);
     msqid = CreateQueue();
-    ChangeSemaphore(semid, N);
+    ChangeSemaphore(semid, 0, N);
 
     while (1)
     {
@@ -52,6 +53,7 @@ int main()
             exit(-1);
         }
         pthread_create(&thread_id, (pthread_attr_t *)NULL , ProcessInquiry, &mybufin);
+        ChangeSemaphore(semid, 1, 0);
     }
     return 0;
 }
@@ -63,11 +65,13 @@ void* ProcessInquiry(void* arg)
     * Я не доглядел одно слабое месте. Может случиться так, что следующее сообщение придёт раньше, чем вы скопируете arg в локальную переменную.
     * С помощью дополнительного семафора необходимо гарантировать, что до тех пор, пока это копирование не завершится, вы не будете считывать следующее сообщение из очереди.
     */
-   
+
     struct mymsgbufin mybufin = *((struct mymsgbufin *)arg);
+    sleep(10);
+    ChangeSemaphore(semid, 1, 1);
     struct mymsgbufout mybufout;
 
-    ChangeSemaphore(semid, -1);
+    ChangeSemaphore(semid, 0, -1);
     mybufout.result = mybufin.data.a * mybufin.data.b;
     mybufout.mtype = mybufin.mtype;
 
@@ -77,8 +81,7 @@ void* ProcessInquiry(void* arg)
         msgctl(msqid, IPC_RMID, (struct msqid_ds*)NULL);
         exit(-1);
     }
-    sleep(30);
-    ChangeSemaphore(semid, 1);
+    ChangeSemaphore(semid, 0, 1);
 }
 
 key_t GenerateKey()
@@ -93,12 +96,11 @@ key_t GenerateKey()
     return key;
 }
 
-int CreateSemaphore()
+int CreateSemaphore(int n)
 {
     key_t key = GenerateKey();
     int semid;
-    struct sembuf mybuf;
-    if ((semid = semget(key, 1, 0666 | IPC_CREAT)) < 0)
+    if ((semid = semget(key, n, 0666 | IPC_CREAT)) < 0)
     {
         printf("Can`t get semid\n");
         exit(-1);
@@ -120,12 +122,12 @@ int CreateQueue()
     return msqid;
 }
 
-void ChangeSemaphore(int semid, int n)
+void ChangeSemaphore(int semid, int i, int n)
 {
     struct sembuf mybuf;
     mybuf.sem_op = n;
     mybuf.sem_flg = 0;
-    mybuf.sem_num = 0;
+    mybuf.sem_num = i;
     if (semop(semid, &mybuf, 1) < 0)
     {
         printf("Can`t wait for condition\n");
