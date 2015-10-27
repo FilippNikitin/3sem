@@ -53,7 +53,7 @@ int main()
             exit(-1);
         }
         pthread_create(&thread_id, (pthread_attr_t *)NULL , ProcessInquiry, &mybufin);
-        ChangeSemaphore(semid, 1, 0);
+        ChangeSemaphore(semid, 1, -1);
     }
     return 0;
 }
@@ -74,6 +74,8 @@ void* ProcessInquiry(void* arg)
     ChangeSemaphore(semid, 0, -1);
     mybufout.result = mybufin.data.a * mybufin.data.b;
     mybufout.mtype = mybufin.mtype;
+
+    sleep(30);
 
     if (msgsnd(msqid, (struct msgbufout *) &mybufout, sizeof(long int), 0) < 0)
     {
