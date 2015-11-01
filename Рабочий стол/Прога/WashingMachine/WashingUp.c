@@ -121,6 +121,11 @@ void ChangeSemaphore(int semid, int n)
     }
 }
 
+/*
+ * Повторяющийся в разных *.c файлах код можно вынести в отдельный *.h файл
+ * Потом компилировать так: gcc file.c file.h -o executefile
+ */
+
 void CreateFifo (char *name)
 {
     umask(0);
@@ -182,6 +187,11 @@ struct dish_c WashDish(struct dish dirtyDish)
 
 void PutOnTable(struct dish_c cleanDish)
 {
+   /*
+    * Сейчас, конечно, не особо важно, но в случае учёта производительности, довольно накладно для каждой тарелки вызывать semget, msgget.
+    * Это достаточно один раз сделать.
+    */
+   
     semid = CreateSemaphore();
     msqid = CreateQueue();
     ChangeSemaphore(semid, (cleanDish.size)*(-1));

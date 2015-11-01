@@ -6,6 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+ * Пишите лучше все константы либо с заглавной буквы "Output", либо всё с заглавно, разделяя слова подчёркиванием "OUTPUT_FILE".
+ */
+
 #define N 10
 #define output 1
 #define input 0
@@ -20,6 +24,10 @@ int OpenFifo(const char *name, int flag);
 
 int main ()
  {
+  /*
+   * Называйте названия структур с заглавной, а переменные со строчной, тогда не надо выдумывать названия:
+   * Dish dish;
+   */
 	struct dish
 	{
 		int size;
@@ -31,10 +39,13 @@ int main ()
     CreateFifo(name1);
     CreateFifo(name2);
 
+  /*
+   * Можно писать просто while (answer) {}
+   */ 
 	while ((1)&&(answer))
 	{
         fdout = OpenFifo(name1, output);
-		dirtyDish.size = (int) rand() % N+1;
+		dirtyDish.size = (int) rand() % N + 1;
 		dirtyDish.DirtinessRate = (int) rand() % N;
 		printf("Dirty dish: size %d, dirtiness rate %d\n", dirtyDish.size, dirtyDish.DirtinessRate);
 		write(fdout, &dirtyDish, sizeof(struct dish));
@@ -42,7 +53,6 @@ int main ()
         fdin = OpenFifo(name2, input);
 		read(fdin, &answer, sizeof(int));
 		close(fdin);
-
 	}
 	return 0;
 }
