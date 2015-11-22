@@ -11,6 +11,9 @@
 int main(int argc, char** argv)
 {
     int sockfd;
+/*
+ * FIXIT: нужно создать отдельную константу для 1000 и для 53000
+ */
     char sendline[1000];
     struct sockaddr_in servaddr, cliaddr;
 
@@ -83,6 +86,10 @@ int main(int argc, char** argv)
         int n;
         while(1)
         {
+	    /* 
+	     * FIXIT:
+	     * есть ф-я для обнуления: bzero
+	     */
             for (n = 0; n < 1000; n++)
             {
                 recv[n] = 0;

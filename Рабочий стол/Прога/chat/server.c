@@ -9,6 +9,14 @@
 #include <stdlib.h>
 #include <time.h>
 
+/*
+ * Засчитано, но поправте ряд формальных замечаний. 
+ * Желательно уже просто свыкнуться с этими вещами и сразу делать так.
+ */
+
+/*
+ * Совет: называйте структуры с заглавной буквы. Тогда не надо будет думать над названием переменной: User user;
+ */
 struct user
 {
     char* nick;
@@ -17,9 +25,11 @@ struct user
 
 char *MakeAnswer(char* nick, char* msg);
 
-
 int main()
 {
+    /*
+     * Отдельные константы для 1000, 53000, 999
+     */
     int sockfd;
     int clilen, n;
     char *line = (char*)malloc(1000);
@@ -37,7 +47,6 @@ int main()
         perror(NULL);
         exit(1);
     }
-
     else
     {
         printf("Sock fd:%d\n", sockfd);
@@ -53,9 +62,10 @@ int main()
 
     while (1)
     {
-
         int i;
-
+	/*
+	 * bzero для обнуления
+	 */
         for (i = 0; i < 1000; i++)
             line[i] = 0;
 
@@ -68,9 +78,17 @@ int main()
             exit(1);
         }
 
+        /*
+	 * Нужны более ясные названия:
+	 * isUserFound или isNewUser .. что-то более осмысленное.
+	 * userIndex.
+	 * 
+	 * Лучше каждое такое действие, вроде проверки наличия пользователя в списке данного чата выносить в отдельные ф-я, которые называть
+	 * соответсвующим образом. Это сделает код самодокументируемым. Если вы будете работать в команде, это сэкономит время вашим напарникам
+	 * в понимании кода, и все вам будут только благодарны. 
+	 */
         int f = 0;
         int nUser;
-
 
         for (i = 0; i < numUsers; i++)
         {
@@ -87,7 +105,7 @@ int main()
         if (f == 0)
         {
             usersList = (struct user *)realloc(usersList, (numUsers + 1) * sizeof(struct user));
-            (usersList[numUsers]).nick = (char *)malloc(strlen(line) * sizeof(char)+1);
+            (usersList[numUsers]).nick = (char *)malloc(strlen(line) * sizeof(char) + 1);
             (usersList[numUsers]).nick = strcpy((usersList[numUsers]).nick, line);
             (usersList[numUsers]).usersInf = cliaddr;
             numUsers++;
@@ -95,9 +113,7 @@ int main()
             line = strcat(line," join.\n" );
             char a[] = "Admin";
             line = MakeAnswer(a,line);
-
         }
-
         else
         {
             line = MakeAnswer((usersList[nUser]).nick, line);
@@ -131,5 +147,4 @@ char *MakeAnswer(char* nick, char* msg)
     return(msg);
     free(time);
     free(tmp);
-
 }
