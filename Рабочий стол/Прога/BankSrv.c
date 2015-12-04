@@ -15,7 +15,6 @@ const char *negative = "There aren't enouth money in cashpoint\n\0";
 
 #define FileName "key.txt"
 
-
 const int MaxRequest = 512;
 const int MaxResponse = 512;
 const int Port = 52000;
@@ -32,16 +31,13 @@ struct inquary
     int sockfd;
 };
 
-
 void* ProcessInquiry(void* arg);
 key_t GenerateKey();
 int CreateSemaphore(int n);
 void ChangeSemaphore(int semid, int i, int n);
 
-
 int main()
 {
-
 	int sockfd, newsockfd;
 	int clilen;
 	int n;
@@ -89,7 +85,14 @@ int main()
 		}
         pthread_t thread_id;
         pthread_create(&thread_id, (pthread_attr_t *)NULL , ProcessInquiry, &tmp);
-
+	/*
+	 * FIXIT:
+	 * нет никакой гарантии, что данные из структуры
+	 * struct inquary tmp;
+	 * будут скопированы раньше, чем она будет удалена со стека.
+	 * 
+	 * Ровна та же проблемы была у вас в клиент/сервере с очередью сообщений.
+	 */
 	}
 	return 0;
 }
@@ -104,6 +107,10 @@ void* ProcessInquiry(void* arg)
         ChangeSemaphore(semid, 0, -1);
         printf("**\n");
         sleep(15);
+	/*
+	 * Мне кажется, лучше сделать числовую переменную 
+	 * int request = atoi(usr.request); 
+	 */
         if(atoi(usr.request) > 0)
         {
             balance += atoi(usr.request);
