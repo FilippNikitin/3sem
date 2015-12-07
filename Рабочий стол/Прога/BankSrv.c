@@ -70,8 +70,9 @@ int main()
 		exit(1);
 	}
 
-    semid = CreateSemaphore(1);
+    semid = CreateSemaphore(2);
     ChangeSemaphore(semid, 0, 1);
+    ChangeSemaphore(semid, 1, 1);
 
 	while(1)
 	{
@@ -84,6 +85,7 @@ int main()
 				exit(1);
 		}
         pthread_t thread_id;
+    	ChangeSemaphore(semid, 1, -1);
         pthread_create(&thread_id, (pthread_attr_t *)NULL , ProcessInquiry, &tmp);
 	/*
 	 * FIXIT:
@@ -101,26 +103,26 @@ void* ProcessInquiry(void* arg)
     int n, usrMoney;
     struct inquary usr = *((struct inquary *)arg);
     usr.request = (char*)malloc(MaxRequest*sizeof(char));
+    ChangeSemaphore(semid, 1, 1);
     while((n = read(usr.sockfd, usr.request, MaxRequest)) > 0)
     {
-        printf("**\n");
         ChangeSemaphore(semid, 0, -1);
-        printf("**\n");
         sleep(15);
 	/*
 	 * Мне кажется, лучше сделать числовую переменную 
-	 * int request = atoi(usr.request); 
+	  int request = atoi(usr.request); 
 	 */
-        if(atoi(usr.request) > 0)
+	int request = atoi(usr.request); 
+        if(request > 0)
         {
-            balance += atoi(usr.request);
+            balance += request;
             printf("%d\n", balance);
             strcpy(usr.request, positive);
             printf("1*%s\n", usr.request);
         }
         else
         {
-            if ((balance + atoi(usr.request)) >= 0)
+            if ((balance + request) >= 0)
             {
                 balance += atoi(usr.request);
                 strcpy(usr.request, positive);
@@ -131,7 +133,6 @@ void* ProcessInquiry(void* arg)
             }
         }
         ChangeSemaphore(semid, 0, 1);
-
         if((n = write(usr.sockfd, usr.request, MaxResponse)) < 0)
         {
             perror(NULL);
